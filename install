@@ -1,0 +1,39 @@
+#! /usr/bin/env bash
+
+missing_dep=false
+
+if ! command -v rustup &> /dev/null
+then
+    missing_dep=true
+    echo "rustup is not installed."
+    echo -e "\tPlease install rustup by following the instructions at https://rustup.rs/"
+else
+    if ! rustup target list --installed | grep thumbv7em-none-eabihf &> /dev/null
+    then
+        echo -e "\tthumbv7em-none-eabihf toolchain needs to be installed. Starting install."
+        rustup target add thumbv7em-none-eabihf
+    fi
+fi
+
+if ! command -v openocd &> /dev/null
+then
+    missing_dep=true
+    echo "openocd is not installed."
+    echo -e "\topenocd is required for communicating with the board. Install with your package manager (e.g. apt for Ubuntu or homebrew for macOS)."
+fi
+
+if ! command -v arm-none-eabi-gcc &> /dev/null
+then
+    missing_dep=true
+    echo "arm-none-eabi toolchain is not installed."
+    echo -e "\tThis toolchain is required for linking and debugging with GDB."
+    echo -e "\tPlease install via your package manager (e.g. apt for Ubuntu),"
+    echo -e "\tor follow the instructions in https://xpack.github.io/arm-none-eabi-gcc/install/"
+fi
+
+if [ $missing_dep = true ]
+then
+    echo "One or more system dependencies are missing. Please install the dependencies and try again."
+else
+    echo "All system dependencies are present"
+fi
